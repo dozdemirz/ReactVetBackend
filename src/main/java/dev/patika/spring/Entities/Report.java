@@ -29,7 +29,7 @@ public class Report {
     private String reportDiagnosis;
 
     @Column(name = "report_price", nullable = false, length = 70)
-    private double reportPrice;
+    private Double reportPrice;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "appointment_id")

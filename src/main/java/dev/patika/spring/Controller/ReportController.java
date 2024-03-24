@@ -34,18 +34,29 @@ public class ReportController {
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody Report report) {
         String reportName = report.getReportTitle();
-        if (reportRepo.existsByReportTitle(reportName)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bu rapor zaten mevcut!");
-        }
+        try {
+            if (report.getReportTitle() == null || report.getReportTitle().isEmpty() ||
+                    report.getReportDiagnosis() == null ||report.getReportDiagnosis().isEmpty() ||
+                    report.getReportPrice() == null ||
+                    report.getAppointment() == null ||report.getAppointment().getAppointmentId()==null
+            ) {
+                throw new IllegalArgumentException("Rapora ait alanlar boş olamaz.");
+            }
+            if (reportRepo.existsByReportTitle(reportName)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bu rapor zaten mevcut!");
+            }
 
-        Appointment appointment = report.getAppointment();
-        if (report.getAppointment() != null) {
-            Optional<Appointment> existingAppointment = appointmentRepo.findById(report.getAppointment().getAppointmentId());
-            existingAppointment.ifPresent(report::setAppointment);
-        }
+            Appointment appointment = report.getAppointment();
+            if (report.getAppointment() != null) {
+                Optional<Appointment> existingAppointment = appointmentRepo.findById(report.getAppointment().getAppointmentId());
+                existingAppointment.ifPresent(report::setAppointment);
+            }
 
-        Report savedReport = reportRepo.save(report);
-        return ResponseEntity.ok(savedReport);
+            Report savedReport = reportRepo.save(report);
+            return ResponseEntity.ok(savedReport);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
 
@@ -77,18 +88,14 @@ public class ReportController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateReport(@PathVariable("id") long id, @RequestBody ReportRequest reportRequest) {
-        if (reportRequest.getReportTitle() == null || reportRequest.getReportTitle().isEmpty() ||
-                reportRequest.getReportDiagnosis() == null ||reportRequest.getReportDiagnosis().isEmpty() ||
-                reportRequest.getReportPrice() == null ||
-                reportRequest.getAppointment() == null ||reportRequest.getAppointment().getAppointmentId()==null
-        ) {
-            throw new IllegalArgumentException("Rapora ait alanlar boş olamaz.");
-        }
-
         try {
             Optional<Report> optionalReport = reportRepo.findById(id);
-            if (reportRequest.getAppointment() == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Randevu bilgisi eksik.");
+            if (reportRequest.getReportTitle() == null || reportRequest.getReportTitle().isEmpty() ||
+                    reportRequest.getReportDiagnosis() == null ||reportRequest.getReportDiagnosis().isEmpty() ||
+                    reportRequest.getReportPrice() == null ||
+                    reportRequest.getAppointment() == null ||reportRequest.getAppointment().getAppointmentId()==null
+            ) {
+                throw new IllegalArgumentException("Rapora ait alanlar boş olamaz.");
             }
 
             if (optionalReport.isPresent()) {
