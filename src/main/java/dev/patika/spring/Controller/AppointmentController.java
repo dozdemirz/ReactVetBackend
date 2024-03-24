@@ -159,4 +159,19 @@ public class AppointmentController {
     public List<Appointment> getExpiringVaccinesAfterStart(@PathVariable LocalDateTime endDate) {
         return appointmentRepo.findByAppointmentDateAfter(endDate);
     }
+
+    @GetMapping("/expiring/{doctorName}/{startDate}/{endDate}")
+    public List<Appointment> getExpiringAppointmentsWithDoctor(@PathVariable ("doctorName") String doctorName,@PathVariable("startDate") LocalDateTime startDate, @PathVariable("endDate") LocalDateTime endDate) {
+        return appointmentRepo.findByAppointmentDateBetweenAndDoctor_DoctorNameLikeIgnoreCase(startDate, endDate,doctorName);
+    }
+
+    @GetMapping("/expiring-before/{doctorName}/{endDate}")
+    public List<Appointment> getExpiringVaccinesBeforeStartWithDoctor(@PathVariable("doctorName") String name,@PathVariable ("endDate") LocalDateTime endDate) {
+        return appointmentRepo.findByAppointmentDateBeforeAndDoctor_DoctorNameLikeIgnoreCase(endDate,name);
+    }
+
+    @GetMapping("/expiring-after/{doctorName}/{endDate}")
+    public List<Appointment> getExpiringVaccinesAfterStartWithDoctor(@PathVariable("doctorName") String name,@PathVariable ("endDate") LocalDateTime endDate) {
+        return appointmentRepo.findByAppointmentDateAfterAndDoctor_DoctorNameLikeIgnoreCase(endDate,name);
+    }
 }

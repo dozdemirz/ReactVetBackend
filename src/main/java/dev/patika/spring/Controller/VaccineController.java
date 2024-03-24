@@ -165,5 +165,21 @@ public class VaccineController {
     }
 
 
+    @GetMapping("/expiring/{animalName}/{startDate}/{endDate}")
+    public List<Vaccine> getExpiringVaccinesWithDoctor(@PathVariable ("animalName") String animalName, @PathVariable("startDate") LocalDate startDate, @PathVariable("endDate") LocalDate endDate) {
+        return vaccineRepo.findByProtectionFinishDateBetweenAndAnimal_AnimalNameLikeIgnoreCase(startDate, endDate,"%"+animalName+"%");
+    }
+
+    @GetMapping("/expiring-before/{animalName}/{endDate}")
+    public List<Vaccine> getExpiringVaccinesBeforeStartWithDoctor(@PathVariable("animalName") String name,@PathVariable ("endDate") LocalDate endDate) {
+        return vaccineRepo.findByProtectionFinishDateBeforeAndAnimal_AnimalNameLikeIgnoreCase(endDate,"%"+name+"%");
+    }
+
+    //http://localhost:8080/appointment/expiring-after/2023-12-28T00:00:00
+    @GetMapping("/expiring-after/{animalName}/{endDate}")
+    public List<Vaccine> getExpiringVaccinesAfterStartWithDoctor(@PathVariable("animalName") String name,@PathVariable ("endDate") LocalDate endDate) {
+        return vaccineRepo.findByProtectionFinishDateAfterAndAnimal_AnimalNameLikeIgnoreCase(endDate,"%"+name+"%");
+    }
+
 
 }
