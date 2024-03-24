@@ -25,6 +25,19 @@ public class AnimalService {
     }
 
     public Animal saveAnimal(AnimalRequest animalRequest) {
+
+        if (animalRequest.getAnimalGender() == null || animalRequest.getAnimalGender().isEmpty() ||
+                animalRequest.getAnimalName() == null || animalRequest.getAnimalName().isEmpty() ||
+                animalRequest.getAnimalColor() == null || animalRequest.getAnimalColor().isEmpty() ||
+                animalRequest.getAnimalBreed() == null || animalRequest.getAnimalBreed().isEmpty() ||
+                animalRequest.getAnimalSpecies() == null || animalRequest.getAnimalSpecies().isEmpty()||
+                animalRequest.getBirthDate() == null ||
+                animalRequest.getCustomer() == null ||
+                animalRequest.getCustomer().getCustomerId() == null ||
+                animalRequest.getCustomer().getCustomerName() == null
+        ) {
+            throw new IllegalArgumentException("Hayvana ait alanlar boş olamaz.");
+        }
         // AnimalRequest'ten Animal'a dönüşüm yapılıyor
         Animal animal = convertToAnimal(animalRequest);
 

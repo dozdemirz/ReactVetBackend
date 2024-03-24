@@ -30,23 +30,27 @@ public class DoctorController {
 
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody Doctor doctor) {
-        if (doctor.getDoctorCity() == null || doctor.getDoctorCity().isEmpty() ||
-                doctor.getDoctorPhone() == null || doctor.getDoctorPhone().isEmpty() ||
-                doctor.getDoctorMail() == null || doctor.getDoctorMail().isEmpty() ||
-                doctor.getDoctorAddress() == null || doctor.getDoctorAddress().isEmpty() ||
-                doctor.getDoctorName() == null || doctor.getDoctorName().isEmpty()) {
-            throw new RuntimeException("Tüm alanları doldurunuz!");
-        }
+        try {
+            if (doctor.getDoctorCity() == null || doctor.getDoctorCity().isEmpty() ||
+                    doctor.getDoctorPhone() == null || doctor.getDoctorPhone().isEmpty() ||
+                    doctor.getDoctorMail() == null || doctor.getDoctorMail().isEmpty() ||
+                    doctor.getDoctorAddress() == null || doctor.getDoctorAddress().isEmpty() ||
+                    doctor.getDoctorName() == null || doctor.getDoctorName().isEmpty()) {
+                throw new RuntimeException("Tüm alanları doldurunuz!");
+            }
 
-        // Aynı ada sahip müşteri olabileceğinden müşterilerin benzersizliğini telefon numaralarına göre kontrol ediyorum
-        String phoneNumber = doctor.getDoctorPhone();
-        if (doctorRepo.existsByDoctorPhone(phoneNumber)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Bu doktor zaten mevcut.");
-        }
+            // Aynı ada sahip müşteri olabileceğinden müşterilerin benzersizliğini telefon numaralarına göre kontrol ediyorum
+            String phoneNumber = doctor.getDoctorPhone();
+            if (doctorRepo.existsByDoctorPhone(phoneNumber)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Bu doktor zaten mevcut.");
+            }
 
-        Doctor savedDoctor = doctorRepo.save(doctor);
-        return ResponseEntity.ok(savedDoctor);
+            Doctor savedDoctor = doctorRepo.save(doctor);
+            return ResponseEntity.ok(savedDoctor);
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping("/find-all")

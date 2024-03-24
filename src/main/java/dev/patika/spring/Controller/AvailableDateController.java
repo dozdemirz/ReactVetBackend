@@ -35,27 +35,31 @@ public class AvailableDateController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<AvailableDate> save(@RequestBody AvailableDateRequest request) {
+    public ResponseEntity<?> save(@RequestBody AvailableDateRequest request) {
 
-        if (request.getDoctor() == null || request.getDoctor().getDoctorId() == null || request.getAvailableDate() == null) {
-            throw new RuntimeException("Doktor veya müsait gün boş olamaz!");
+        try {
+            if (request.getDoctor() == null || request.getDoctor().getDoctorId() == null || request.getAvailableDate() == null) {
+                throw new RuntimeException("Doktor veya müsait gün boş olamaz!");
+            }
+            AvailableDate availableDate = new AvailableDate();
+            availableDate.setAvailableDate(request.getAvailableDate());
+
+            Long doctorId = request.getDoctor().getDoctorId();
+            Doctor doctor = doctorRepo.findById(doctorId)
+                    .orElseThrow(() -> new RuntimeException("Belirtilen id'ye sahip doktor bulunamadı: " + doctorId)); //Doktor yoksa diye kontrol
+            availableDate.setDoctor(doctor);
+
+            Doctor doctorDate = availableDate.getDoctor();
+            LocalDate appointmentDate = availableDate.getAvailableDate();
+            if (availableDateRepo.existsByDoctorAndAvailableDate(doctorDate, appointmentDate)) { //Aynı tarihte randevu varsa hata veriyoruz
+                throw new RuntimeException("Bu tarih için zaten bir kayıt var.");
+            }
+
+            availableDateRepo.save(availableDate);
+            return ResponseEntity.ok(availableDate);
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        AvailableDate availableDate = new AvailableDate();
-        availableDate.setAvailableDate(request.getAvailableDate());
-
-        Long doctorId = request.getDoctor().getDoctorId();
-        Doctor doctor = doctorRepo.findById(doctorId)
-                .orElseThrow(() -> new RuntimeException("Belirtilen id'ye sahip doktor bulunamadı: " + doctorId)); //Doktor yoksa diye kontrol
-        availableDate.setDoctor(doctor);
-
-        Doctor doctorDate = availableDate.getDoctor();
-        LocalDate appointmentDate = availableDate.getAvailableDate();
-        if (availableDateRepo.existsByDoctorAndAvailableDate(doctorDate, appointmentDate)) { //Aynı tarihte randevu varsa hata veriyoruz
-            throw new RuntimeException("Bu tarih için zaten bir kayıt var.");
-        }
-
-        availableDateRepo.save(availableDate);
-        return ResponseEntity.ok(availableDate);
     }
 
     //id'ye göre doktorun çalıştığı günleri silebilmek için
