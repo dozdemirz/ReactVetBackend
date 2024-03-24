@@ -31,6 +31,14 @@ public class CustomerController {
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody Customer customer) {
         try {
+            if (customer.getCustomerPhone() == null || customer.getCustomerPhone().isEmpty() ||
+                    customer.getCustomerAddress() == null ||customer.getCustomerAddress().isEmpty() ||
+                    customer.getCustomerName() == null ||customer.getCustomerName().isEmpty() ||
+                    customer.getCustomerCity() == null ||customer.getCustomerCity().isEmpty() ||
+                    customer.getCustomerMail() == null ||customer.getCustomerMail().isEmpty()
+            ) {
+                throw new IllegalArgumentException("Müşteriye ait alanlar boş olamaz.");
+            }
             if (customerRepo.existsByCustomerPhone(customer.getCustomerPhone())) { //Aynı ada sahip müşteri olabileceği için unique olan telefon numarası üzerinden kontrol etmeyi seçtim
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bu telefon numarasına sahip müşteri zaten mevcut.");
             }
@@ -60,7 +68,7 @@ public class CustomerController {
     //Ada sahip tüm müşterileri getiriyor (aynı isimde varsa birden çok). Ignorecase de kullanıyor
     @GetMapping("/name/{name}")
     public List<Customer> findByCustomerName(@PathVariable("name") String name) {
-        return this.customerRepo.findByCustomerNameIgnoreCase(name);
+        return this.customerRepo.findByCustomerNameLikeIgnoreCase("%"+name+"%");
     }
 
     //id'ye göre müşteri silmek için
@@ -85,16 +93,16 @@ public class CustomerController {
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateCustomer(@PathVariable("id") long id, @RequestBody CustomerRequest customerRequest) {
 
-        if (customerRequest.getCustomerPhone() == null || customerRequest.getCustomerPhone().isEmpty() ||
-                customerRequest.getCustomerAddress() == null ||customerRequest.getCustomerAddress().isEmpty() ||
-                customerRequest.getCustomerName() == null ||customerRequest.getCustomerName().isEmpty() ||
-                customerRequest.getCustomerCity() == null ||customerRequest.getCustomerCity().isEmpty() ||
-                customerRequest.getCustomerMail() == null ||customerRequest.getCustomerMail().isEmpty()
-        ) {
-            throw new IllegalArgumentException("Müşteriye ait alanlar boş olamaz.");
-        }
         try {
             Optional<Customer> optionalCustomer = customerRepo.findById(id);
+            if (customerRequest.getCustomerPhone() == null || customerRequest.getCustomerPhone().isEmpty() ||
+                    customerRequest.getCustomerAddress() == null ||customerRequest.getCustomerAddress().isEmpty() ||
+                    customerRequest.getCustomerName() == null ||customerRequest.getCustomerName().isEmpty() ||
+                    customerRequest.getCustomerCity() == null ||customerRequest.getCustomerCity().isEmpty() ||
+                    customerRequest.getCustomerMail() == null ||customerRequest.getCustomerMail().isEmpty()
+            ) {
+                throw new IllegalArgumentException("Müşteriye ait alanlar boş olamaz.");
+            }
 
             if (optionalCustomer.isPresent()) {
                 Customer existingCustomer = optionalCustomer.get();

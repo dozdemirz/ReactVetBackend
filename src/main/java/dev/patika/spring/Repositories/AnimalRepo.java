@@ -13,16 +13,19 @@ import java.util.List;
 public interface AnimalRepo extends JpaRepository <Animal, Long>{
         List<Animal> findByAnimalName(String animalName);
 
-
-        //Adrese büyük harfli yazıldığında sorun çıkıyordu. Ignorecase ile yapmak için custom query kullandım
-        @Query("SELECT a FROM Animal a WHERE LOWER(a.animalName) = LOWER(:name)")
-        List<Animal> findByAnimalNameIgnoreCase(@Param("name") String name);
         List<Animal> findByAnimalId(Long animalId);
+
+        List<Animal> findByAnimalNameStartingWithIgnoreCase(String name);
         List<Animal> findByCustomer_CustomerId(Long customerId);
+
+        List<Animal> findByCustomer_CustomerNameLikeIgnoreCase(String name);
+
+        public List<Animal> findByAnimalNameLikeIgnoreCase(String name);
 
         boolean existsByAnimalNameAndCustomer_CustomerId(String animalName, Long customerId);
 
         boolean existsByAnimalNameAndCustomer(String animalName, Customer customer);
 
 
+        List<Animal> findByAnimalNameStartingWithIgnoreCaseAndCustomer_CustomerNameStartingWithIgnoreCase(String animalName,String customerName);
 }

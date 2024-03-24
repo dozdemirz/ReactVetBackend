@@ -45,6 +45,14 @@ public class VaccineController {
     @PostMapping("/save")
     public ResponseEntity<?> createVaccine(@RequestBody VaccineRequest vaccineRequest) {
         try {
+            if (vaccineRequest.getReport() == null || vaccineRequest.getVaccineName() == null ||
+                    vaccineRequest.getAnimal() == null || vaccineRequest.getVaccineName().isEmpty() ||
+                    vaccineRequest.getVaccineCode() == null || vaccineRequest.getVaccineCode().isEmpty() ||
+                    vaccineRequest.getProtectionFinishDate() == null || vaccineRequest.getProtectionStartDate()==null ||
+                    vaccineRequest.getAnimal().getAnimalId() == null || vaccineRequest.getReport().getReportId() ==null
+            ) {
+                throw new IllegalArgumentException("Aşıya ait alanlar boş olamaz.");
+            }
             if (!vaccineService.isAnimalExist(vaccineRequest.getAnimal().getAnimalId())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("Belirtilen id'de hayvan mevcut değil");
@@ -67,13 +75,34 @@ public class VaccineController {
         return ResponseEntity.ok(vaccines);
     }
 
-    //Burası başlangıç ve bitiş tarihleri alarak o tarihler arasında aşısı bitecek olan hayvanları getiriyor
     @GetMapping("/expiring")
     public ResponseEntity<List<Animal>> getAnimalsWithExpiringVaccines(
             @RequestParam("startDate") LocalDate startDate,
             @RequestParam("endDate") LocalDate endDate) {
         List<Animal> animals = vaccineService.getAnimalsWithExpiringVaccines(startDate, endDate);
         return ResponseEntity.ok(animals);
+    }
+
+    @GetMapping("/expiring/{startDate}/{endDate}")
+    public List<Vaccine> getExpiringVaccines(@PathVariable("startDate") LocalDate startDate, @PathVariable("endDate") LocalDate endDate) {
+        return vaccineRepo.findByProtectionFinishDateBetween(startDate, endDate);
+    }
+
+
+    @GetMapping("/expiring-before/{endDate}")
+    public List<Vaccine> getExpiringVaccinesBeforeStart(@PathVariable LocalDate endDate) {
+        return vaccineRepo.findByProtectionFinishDateBefore(endDate);
+    }
+
+    @GetMapping("/expiring-after/{endDate}")
+    public List<Vaccine> getExpiringVaccinesAfterStart(@PathVariable LocalDate endDate) {
+        return vaccineRepo.findByProtectionFinishDateAfter(endDate);
+    }
+
+
+    @GetMapping("/animal-name/{name}")
+    public List<Vaccine> findByAnimalName(@PathVariable("name") String animalName){
+        return this.vaccineRepo.findByAnimal_AnimalNameLikeIgnoreCase("%"+animalName+"%");
     }
 
     @DeleteMapping("/delete/{id}")

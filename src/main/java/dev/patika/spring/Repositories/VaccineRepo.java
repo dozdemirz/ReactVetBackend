@@ -29,6 +29,14 @@ public interface VaccineRepo extends JpaRepository<Vaccine, Long> {
             @Param("vaccineCode") String vaccineCode
     );
 
+    List<Vaccine> findByProtectionFinishDateBetween(LocalDate startDate, LocalDate endDate);
+
+    List<Vaccine> findByProtectionFinishDateAfter(LocalDate startDate);
+    List<Vaccine> findByProtectionFinishDateBefore(LocalDate endDate);
+
+
+    List<Vaccine> findByAnimal_AnimalNameLikeIgnoreCase(String name);
+
     List<Vaccine> findByAnimal_AnimalIdAndVaccineNameAndVaccineCodeAndVaccineIdNot(Long animalId, String name, String code, Long id);
 
     List<Vaccine> findByAnimal_AnimalId(Long animalId);
@@ -39,3 +47,5 @@ public interface VaccineRepo extends JpaRepository<Vaccine, Long> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
 }
+
+

@@ -137,8 +137,22 @@ public class AnimalController {
 
     @GetMapping("/name/{name}")
     public List<Animal> findByAnimalName(@PathVariable("name") String name) {
-        return this.animalRepo.findByAnimalNameIgnoreCase(name);
+        return this.animalRepo.findByAnimalNameLikeIgnoreCase("%"+name+"%");
     }
+
+    @GetMapping("/customer-name/{name}")
+    public List<Animal> findByCustomerName(@PathVariable("name") String name) {
+        return this.animalRepo.findByCustomer_CustomerNameLikeIgnoreCase("%"+name+"%");
+    }
+
+    @GetMapping("/customer-animal/{animalName}-{customerName}")
+    public List<Animal> findByNameAndCustomerName(
+            @PathVariable("animalName") String animalName,
+            @PathVariable("customerName") String customerName
+    ) {
+        return this.animalRepo.findByAnimalNameStartingWithIgnoreCaseAndCustomer_CustomerNameStartingWithIgnoreCase(animalName, customerName);
+    }
+
 
     //id'ye göre animal silmek için
     @DeleteMapping("/delete/{id}")

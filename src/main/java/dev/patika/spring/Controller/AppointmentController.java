@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -133,5 +134,29 @@ public class AppointmentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("ID'ye sahip randevu silinemedi: " + id + ": " + e.getMessage());
         }
+    }
+
+    @GetMapping("/doctor-name/{name}")
+    public List<Appointment> findByDoctorName(@PathVariable("name") String doctorName) {
+        return this.appointmentRepo.findByDoctor_DoctorNameLikeIgnoreCase("%" + doctorName + "%");
+    }
+
+
+    //http://localhost:8080/appointment/expiring/2023-12-25T08:00:00/2023-12-26T08:00:00
+    @GetMapping("/expiring/{startDate}/{endDate}")
+    public List<Appointment> getExpiringAppointments(@PathVariable("startDate") LocalDateTime startDate, @PathVariable("endDate") LocalDateTime endDate) {
+        return appointmentRepo.findByAppointmentDateBetween(startDate, endDate);
+    }
+
+    //http://localhost:8080/appointment/expiring-before/2023-12-28T00:00:00
+    @GetMapping("/expiring-before/{endDate}")
+    public List<Appointment> getExpiringVaccinesBeforeStart(@PathVariable LocalDateTime endDate) {
+        return appointmentRepo.findByAppointmentDateBefore(endDate);
+    }
+
+    //http://localhost:8080/appointment/expiring-after/2023-12-28T00:00:00
+    @GetMapping("/expiring-after/{endDate}")
+    public List<Appointment> getExpiringVaccinesAfterStart(@PathVariable LocalDateTime endDate) {
+        return appointmentRepo.findByAppointmentDateAfter(endDate);
     }
 }

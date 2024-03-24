@@ -36,14 +36,6 @@ public class VaccineService {
         vaccine.setProtectionStartDate(vaccineRequest.getProtectionStartDate());
         vaccine.setProtectionFinishDate(vaccineRequest.getProtectionFinishDate());
 
-        if (vaccineRequest.getReport() == null || vaccineRequest.getVaccineName() == null ||
-                vaccineRequest.getAnimal() == null || vaccineRequest.getVaccineName().isEmpty() ||
-                vaccineRequest.getVaccineCode() == null || vaccineRequest.getVaccineCode().isEmpty() ||
-                vaccineRequest.getProtectionFinishDate() == null || vaccineRequest.getProtectionStartDate()==null ||
-                vaccineRequest.getAnimal().getAnimalId() == null || vaccineRequest.getReport().getReportId() ==null
-        ) {
-            throw new IllegalArgumentException("Aşıya ait alanlar boş olamaz.");
-        }
 
         Animal animal = animalRepo.findById(vaccineRequest.getAnimal().getAnimalId())
                 .orElseThrow(() -> new RuntimeException("Belirtilen ID'ye sahip hayvan bulunamadı."));
