@@ -32,9 +32,7 @@ public class AnimalService {
                 animalRequest.getAnimalBreed() == null || animalRequest.getAnimalBreed().isEmpty() ||
                 animalRequest.getAnimalSpecies() == null || animalRequest.getAnimalSpecies().isEmpty()||
                 animalRequest.getBirthDate() == null ||
-                animalRequest.getCustomer() == null ||
-                animalRequest.getCustomer().getCustomerId() == null ||
-                animalRequest.getCustomer().getCustomerName() == null
+                animalRequest.getCustomer() == null
         ) {
             throw new IllegalArgumentException("Hayvana ait alanlar boş olamaz.");
         }
