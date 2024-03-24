@@ -48,8 +48,8 @@ public class DoctorController {
 
             Doctor savedDoctor = doctorRepo.save(doctor);
             return ResponseEntity.ok(savedDoctor);
-        }catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
@@ -94,7 +94,8 @@ public class DoctorController {
             doctorRequest.getDoctorPhone() == null || doctorRequest.getDoctorPhone().isEmpty() ||
             doctorRequest.getDoctorMail() == null || doctorRequest.getDoctorMail().isEmpty() ||
             doctorRequest.getDoctorAddress() == null || doctorRequest.getDoctorAddress().isEmpty() ||
-            doctorRequest.getDoctorName() == null || doctorRequest.getDoctorName().isEmpty()) {
+            doctorRequest.getDoctorName() == null || doctorRequest.getDoctorName().isEmpty())
+            {
                 throw new RuntimeException("Tüm alanları doldurunuz!");
             }
             Optional<Doctor> optionalDoctor = doctorRepo.findById(id);
